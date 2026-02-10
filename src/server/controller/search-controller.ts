@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import { getPages } from "../../db/query/get-pages";
+import { supabase } from "../../db/supabase";
 
 /**
- * 
+ *
  * @param req
- * @param res 
- * @returns JSON of all the 
+ * @param res
+ * @returns JSON of all the
  */
 export const searchController = async (req: Request, res: Response) => {
   try {
@@ -19,7 +19,16 @@ export const searchController = async (req: Request, res: Response) => {
 
     const offset = (page - 1) * 10;
 
-    const searchResult = await getPages(query, offset);
+    const { data: searchResult, error } = await supabase.rpc("search_pages", {
+      keyword: query,
+      match_threshold: 0.1,
+      page_offset: offset,
+    });
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ error: error.message });
+    }
 
     if (!searchResult || searchResult.length === 0) {
       res.json({

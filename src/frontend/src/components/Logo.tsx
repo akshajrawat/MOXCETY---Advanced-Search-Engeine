@@ -13,14 +13,14 @@ export const Logo = ({ size = "large" }: LogoProps) => {
       className={`${baseSize} font-black tracking-tighter select-none font-sans`}
     >
       {/* Main Text with a subtle drop shadow */}
-      <span className="text-black drop-shadow-xl">MO</span>
+      <span className="text-white drop-shadow-xl">MO</span>
 
       {/* THE TWIST: Gradient Text for X */}
       <span className="bg-clip-text text-transparent bg-linear-to-r from-purple-400 to-pink-600 drop-shadow-lg filter">
         X
       </span>
 
-      <span className="text-black drop-shadow-xl">CET</span>
+      <span className="text-white drop-shadow-xl">CET</span>
 
       {/* THE TWIST: Gradient Text for Y */}
       <span className="bg-clip-text text-transparent bg-linear-to-br from-purple-400 to-indigo-500 drop-shadow-lg filter">

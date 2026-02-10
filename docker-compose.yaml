@@ -1,25 +1,18 @@
-services: # The list of "machines" we want to spin up
-  db: # We name this service "db"
-    image: postgres:15-alpine # The software to install (Postgres v15, Alpine Linux version)
-    container_name: searchscale-pg
+version: "3.8"
 
-    # 1. Credentials
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-
-    # 2. Port Mapping (Host : Container)
-    # Allows your Windows machine (localhost:5432) to talk to the Container (5432)
+services:
+  # --- SERVICE: REDIS (The Nervous System) ---
+  # Supabase handles the DB, but we still need Redis for our Queues.
+  redis:
+    image: redis:alpine
+    container_name: searchscale-redis
     ports:
-      - "${POSTGRES_PORT}:5432"
-
-    # 3. Persistence (Volumes)
-    # Maps a folder on your Windows machine to the folder inside Docker
-    # This ensures that even if you delete Docker, your data survives in "./pgdata"
+      - "6379:6379" # Exposed so your Node.js app can talk to it
     volumes:
-      - ./pgdata:/var/lib/postgresql/data
-
-    # 4. Auto-restart
-    # If the database crashes, Docker will automatically try to start it again
+      - redis_data:/data
+    command: redis-server --appendonly yes # Persists data to disk
     restart: always
+
+volumes:
+  redis_data:
+    # This ensures Redis memory survives a restart
