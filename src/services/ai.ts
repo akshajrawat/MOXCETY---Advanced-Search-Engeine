@@ -1,18 +1,17 @@
 import axios from "axios";
+import { configDotenv } from "dotenv";
 
-const AI_URL = "http://127.0.0.1:8000";
+configDotenv();
 
 /**
  * Takes a string and return a list of floating point numbers
  * @param text
  * @returns numbers[] : a list of 384 numbers
  */
-export async function getVectorEmbeddings(
-  text: string,
-): Promise<number[] | undefined> {
+export async function getVectorEmbeddings(text: string): Promise<number[]> {
   try {
     // send post request and return reponse
-    const response = await axios.post(`${AI_URL}/embed`, {
+    const response = await axios.post(`${process.env.AI_URL}/embed`, {
       text: text,
     });
     return response.data.embedding;
@@ -27,7 +26,7 @@ export async function getVectorEmbeddings(
 // simple health check function
 export async function healthCheck(): Promise<boolean> {
   try {
-    await axios.get(AI_URL);
+    await axios.get(process.env.AI_URL!);
     return true;
   } catch (error) {
     return false;

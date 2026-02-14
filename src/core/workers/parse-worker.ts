@@ -11,6 +11,38 @@ interface parseJobData {
   filePath: string;
 }
 
+// guess the language
+const detectLanguage = (content: string, hint: string = ""): string => {
+  if (hint && !hint.includes("text")) return hint;
+
+  if (
+    content.includes("import React") ||
+    content.includes("useState") ||
+    content.includes("export default")
+  )
+    return "javascript";
+  if (
+    content.includes("def ") &&
+    content.includes("return") &&
+    content.includes("self")
+  )
+    return "python";
+  if (
+    content.includes("public class") ||
+    content.includes("System.out.println")
+  )
+    return "java";
+  if (
+    content.includes("npm install") ||
+    content.includes("yarn add") ||
+    content.includes("npx")
+  )
+    return "bash";
+  if (content.includes("<div") || content.includes("</")) return "jsx";
+
+  return "text"; // Fallback
+};
+
 // the processor
 const parseProcessor = async (job: Job<parseJobData>) => {
   const { url, filePath } = job.data;
@@ -46,16 +78,13 @@ const parseProcessor = async (job: Job<parseJobData>) => {
       }
 
       // guess language
-      let language = "text";
       const dataLang = $el.attr("data-language") || $code.attr("data-language");
       const className = $el.attr("class") || $code.attr("class") || "";
       const classMatch = className.match(/(?:language|lang)-(\w+)/);
+      const htmlHint = dataLang || (classMatch ? classMatch[1] : "");
 
-      if (dataLang) {
-        language = dataLang;
-      } else if (classMatch) {
-        language = classMatch[1];
-      }
+      // USE DETECTOR
+      const language = detectLanguage(content, htmlHint);
 
       // add to codeSnippets
       codeSnippets.push({ language, content });

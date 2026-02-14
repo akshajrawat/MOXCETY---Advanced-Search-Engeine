@@ -23,6 +23,7 @@ export const savePageData = async (url: string, data: CrawlResult) => {
       title: data.title,
       status: "crawled",
       last_crawled: new Date().toISOString(),
+      links: data.links,
     })
     .eq("url", url)
     .select()
